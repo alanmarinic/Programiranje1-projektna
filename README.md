@@ -1,14 +1,17 @@
-# Analiza avtomobilov
+# Analiza knjig
 Projektna naloga pri programiranju 1
 
 
-Podatke o avtih za prodajo bom zajemal s strani [Avto.net](https://www.avto.net).
+Podatke o knjigah bom zajemal s strani [Books to Scrape](http://books.toscrape.com/index.html).
 Zajel bom:
+* naslov
+* oceno
+* kategorijo
 * ceno
-* gorivo
-* letnik
-* znamko
-* model...
+
 
 ## Vprašanja
-Analiziral bom različne povezave med parametri in ceno.
+Analiziral bom povezave med različnimi parametri in poskusil najti korelacije med njimi.
+
+Preveril bom če imajo dražje knjige v splošnem boljšo oceno,
+če so določene kategorije bolje ocenjene oziroma dražje...
