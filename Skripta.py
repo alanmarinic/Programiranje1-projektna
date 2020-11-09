@@ -36,8 +36,7 @@ for item in kategorije_obdelava:
     for ctg in item.values():
         ktg_imena_datotek.append(ctg)
 
-#range(2, 9)
-for i in range(2, 3):
+for i in range(2, 9):
     index_sez.append(f'page-{i}')
 
 slovar_strani = {linki_ctg[i]: ktg_imena_datotek[i] for i in range(len(linki_ctg))}
@@ -45,16 +44,16 @@ slovar_strani = {linki_ctg[i]: ktg_imena_datotek[i] for i in range(len(linki_ctg
 
 '''Shranjevanje strani po kategorijah'''
 # Spremembo sem naredil, ker je za iskanje po kategorijah potrebno 
-# preleteti približno 900 strani manj kot pri iskanju po izdelkih, kar prihrani na času.
-#for i in index_sez:
-#    for item in slovar_strani:
-#        url_2 = f'http://books.toscrape.com/catalogue/category/books/{item}/{i}.html'
-#        ime_datoteke = (
-#            f'zajeti-podatki/'
-#            f'{slovar_strani.get(item).replace(" ", "_")}_od_'
-#            f'{index_sez.index(i) * 20 + 1}_do_{(index_sez.index(i) + 1 ) * 20}.html'
-#        )
-#        orodja.shrani_spletno_stran(url_2, ime_datoteke)
+# preleteti približno 900 strani manj kot pri iskanju po izdelkih, kar je bolj ekonomično.
+for i in index_sez:
+    for item in slovar_strani:
+        url_2 = f'http://books.toscrape.com/catalogue/category/books/{item}/{i}.html'
+        ime_datoteke = (
+            f'zajeti-podatki/'
+            f'{slovar_strani.get(item).replace(" ", "_")}_od_'
+            f'{index_sez.index(i) * 20 + 1}_do_{(index_sez.index(i) + 1 ) * 20}.html'
+        )
+        orodja.shrani_spletno_stran(url_2, ime_datoteke)
 
 
 '''Poišči vse knjige in jih dodaj v slovar z vsemi atributi'''
@@ -82,10 +81,32 @@ for datoteka in os.listdir(milijon_strani):
                 knjige += zacasni_seznam
                 zacasni_seznam.clear()
 
-#knjigam dodaj id
+# Knjigam dodaj id
 i = 1
 for slovar in knjige:
     slovar['id'] = i
     i += 1
 
-print(knjige)
+
+'''Pripravljanje podatkov'''
+# Pretvorba iz £ v €
+for slovar in knjige:
+    slovar['cena'] = round(1.11 * float(slovar['cena']), 2)
+# Pretvorba ocen in besednih v numerične vrednosti
+    if slovar['ocena'] == "One":
+        slovar['ocena'] = 1
+    elif slovar['ocena'] == "Two":
+        slovar['ocena'] = 2
+    elif slovar['ocena'] == "Three":
+        slovar['ocena'] = 3
+    elif slovar['ocena'] == "Four":
+        slovar['ocena'] = 4
+    elif slovar['ocena'] == "Five":
+        slovar['ocena'] = 5
+# Čudno ne pretvarja v utf-8
+    slovar['naslov'] = slovar['naslov'].replace("&#39;", "'").replace("Ã©", "é").replace("&amp;", "&").replace("â", "'")
+    
+
+'''Shranjevanje v json/csv'''
+orodja.zapisi_json(knjige, 'obdelani-podatki/knjige_j.json')
+orodja.zapisi_csv(knjige, ['id','naslov', 'ocena', 'cena', 'kategorija'], 'obdelani-podatki/knjige_c.csv')
